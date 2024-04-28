@@ -39,20 +39,20 @@ class DBStorage:
                                              HBNB_MYSQL_DB))
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
-        
+
     def get(self, cls, id):
         """A method to retrieve one object"""
         if cls and id:
-            if cls in classes.values() and isinstance(id,str):
+            if cls in classes.values() and isinstance(id, str):
                 obj = self.all(cls)
-                for key,value in obj.items():
+                for key, value in obj.items():
                     if key.split('.')[1]:
                         return value
             else:
                 return
         return
-    
-    def count(self,cls=None):
+
+    def count(self, cls=None):
         """count the number of objects in storage"""
         if not cls:
             occur = self.all()
