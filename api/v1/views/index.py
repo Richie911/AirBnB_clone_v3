@@ -1,36 +1,30 @@
 #!/usr/bin/python3
-"""
-application index
-"""
-from flask import jsonify
-from api.v1.views import app_views
+""" Index """
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 from models import storage
+from api.v1.views import app_views
+from flask import jsonify
 
 
-@app_views.route('/status')
-def api_status():
-    """return status OK"""
-    resp = {
-        'status': "OK"
-    }
-    return jsonify(resp)
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
+def status():
+    """ Status of API """
+    return jsonify({"status": "OK"})
 
 
-@app_views.route("/stats", methods=['GET'], strict_slashes=False)
-def stats():
-    """
-    stats of all objs route
-    """
-    data = {
-        "amenities": storage.count("Amenity"),
-        "cities": storage.count("City"),
-        "places": storage.count("Place"),
-        "reviews": storage.count("Review"),
-        "states": storage.count("State"),
-        "users": storage.count("User"),
-    }
+@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+def number_objects():
+    """ Retrieves the number of each objects by type """
+    classes = [Amenity, City, Place, Review, State, User]
+    names = ["amenities", "cities", "places", "reviews", "states", "users"]
 
-    resp = jsonify(data)
-    resp.status_code = 200
+    nm_objs = {}
+    for ix in range(len(classes)):
+        nm_objs[names[ix]] = storage.count(classes[ix])
 
-    return resp
+    return jsonify(nm_objs)

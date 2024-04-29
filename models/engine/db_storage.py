@@ -40,29 +40,6 @@ class DBStorage:
         if HBNB_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
-    def get(self, cls, id):
-        """A method to retrieve one object"""
-        if cls and id:
-            if cls in classes.values() and isinstance(id, str):
-                obj = self.all(cls)
-                for key, value in obj.items():
-                    if key.split('.')[1]:
-                        return value
-            else:
-                return
-        return
-
-    def count(self, cls=None):
-        """count the number of objects in storage"""
-        if not cls:
-            occur = self.all()
-            return len(occur)
-        if cls in classes.values():
-            all_occur = self.all(cls)
-            return len(all_occur)
-        if cls not in classes.values():
-            return
-
     def all(self, cls=None):
         """query on the current database session"""
         new_dict = {}
@@ -97,3 +74,33 @@ class DBStorage:
     def close(self):
         """call remove() method on the private session attribute"""
         self.__session.remove()
+
+    def get(self, cls, id):
+        """
+        Return -> object based on class name and its ID,
+        or None if not found
+        """
+        if cls not in classes.values():
+            return None
+
+        all_Clss = models.storage.all(cls)
+        for value in all_Clss.values():
+            if (value.id == id):
+                return value
+
+        return None
+
+    def count(self, cls=None):
+        """
+        to count the nbr of objects in storage.
+        """
+        all_Clss = classes.values()
+
+        if not cls:
+            count = 0
+            for clss in all_Clss:
+                count += len(models.storage.all(clss).values())
+        else:
+            count = len(models.storage.all(cls).values())
+
+        return count
